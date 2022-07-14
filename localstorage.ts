@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import stringify from './stringify';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -17,10 +18,10 @@ const LocalCache = {
         const data: Data = { value };
 
         if (expiryTimeMs) data.expiry = expiry;
-
         try {
             localStorage.setItem(getStoreKey(key), stringify(data));
         } catch (e) {
+            console.log('\nFailed to set local cache: ', e);
             // Exception handling
         }
     },
