@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import CacheStore from '..';
+import stringify from '../stringify';
 import getHashKey from './hash';
 import setAxiosProxy from './proxy';
 
@@ -36,6 +37,10 @@ import setAxiosProxy from './proxy';
  * useLocalStorage: boolean [Allows to toggle data in localstorage]
  */
 
+const getHashedCacheKey = (config) => (
+    getHashKey(`${config.url}-${stringify(config.params)}`)
+);
+
 const cache = CacheStore();
 
 // On request, return the cached version, if any
@@ -44,7 +49,7 @@ axios.interceptors.request.use((req) => {
 
     // Only cache GET requests
     if (request.method === 'get') {
-        const key = `${getHashKey(request.url)}.${getHashKey(request.params)}`;
+        const key = getHashedCacheKey(request);
         const cached = cache.get(key);
 
         if (cached) {
@@ -69,7 +74,7 @@ axios.interceptors.request.use((req) => {
 
 // On response, set or delete the cache
 axios.interceptors.response.use((response) => {
-    const key = `${getHashKey(response.config.url)}.${getHashKey(response.config.params)}`;
+    const key = getHashedCacheKey(response.config);
     const { config } = response as any;
     if (config.method === 'get' && config.expiryTime) {
         // On get request, store the response in the cache
