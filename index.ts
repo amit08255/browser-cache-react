@@ -80,7 +80,7 @@ const getExpiryTime = (expiryTime: ExpiryTime): number => {
 };
 
 const CacheInterface = {
-    put(key, value, expiryTime: ExpiryTime, useLocalStorage = true) {
+    put(key, value, expiryTime: ExpiryTime, useLocalStorage = false) {
         const expiryTimeMs = getExpiryTime(expiryTime);
         MemoryCache.put(key, value, expiryTimeMs);
 
