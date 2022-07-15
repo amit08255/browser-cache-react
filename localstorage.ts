@@ -86,6 +86,18 @@ const LocalCache = {
             // Exception handling
         }
     },
+    clearWithPrefix(prefix:string) {
+        try {
+            Object.keys(localStorage).forEach((key) => {
+                if (key.startsWith(`AxioCache.${prefix}`)) {
+                    const dataKey = key.replace('AxioCache.', '');
+                    this.remove(dataKey);
+                }
+            });
+        } catch (e) {
+            // Exception handling
+        }
+    },
 };
 
 export default LocalCache;

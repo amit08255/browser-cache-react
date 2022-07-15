@@ -80,7 +80,7 @@ const getExpiryTime = (expiryTime: ExpiryTime): number => {
     return expiryTimeMs;
 };
 
-const CacheInterface = {
+const CacheInterface:CacheStore = {
     put(key, value, expiryTime: ExpiryTime, useLocalStorage = false) {
         const expiryTimeMs = getExpiryTime(expiryTime);
         MemoryCache.put(key, value, expiryTimeMs);
@@ -116,6 +116,10 @@ const CacheInterface = {
     clear() {
         MemoryCache.clear();
         LocalCache.clear();
+    },
+    clearWithPrefix(prefix) {
+        MemoryCache.clearWithPrefix(prefix);
+        LocalCache.clearWithPrefix(prefix);
     },
 };
 

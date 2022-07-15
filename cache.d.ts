@@ -14,4 +14,5 @@ type CacheStore = {
     get: (key:string) => any,
     del: (key:string) => boolean,
     clear: () => void,
+    clearWithPrefix: (prefix:string) => void,
 };

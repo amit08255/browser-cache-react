@@ -69,6 +69,21 @@ const MemoryCache = {
         store.cache = {};
         store.timeouts = {};
     },
+    clearWithPrefix(prefix:string) {
+        const store = getStore();
+        const newCache = {};
+        const newTimeouts = {};
+
+        Object.keys(store.cache).forEach((key) => {
+            if (!key.startsWith(prefix)) {
+                newCache[key] = store.cache[key];
+                newTimeouts[key] = store.timeouts[key];
+            }
+        });
+
+        store.cache = newCache;
+        store.timeouts = newTimeouts;
+    },
 };
 
 export default MemoryCache;

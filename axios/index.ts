@@ -4,7 +4,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
 import CacheStore from '..';
-import stringify from '../stringify';
 import getHashKey from './hash';
 import setAxiosProxy from './proxy';
 
@@ -37,8 +36,12 @@ import setAxiosProxy from './proxy';
  * useLocalStorage: boolean [Allows to toggle data in localstorage]
  */
 
-const getHashedCacheKey = (config) => (
-    getHashKey(`${config.url}-${stringify(config.params)}`)
+const getHashedFullCacheKey = (config) => (
+    `${getHashKey(config.url)}-${getHashKey(config.params)}`
+);
+
+const getHashedPartialCacheKey = (config) => (
+    `${getHashKey(config.url)}`
 );
 
 const cache = CacheStore();
@@ -47,9 +50,15 @@ const cache = CacheStore();
 axios.interceptors.request.use((req) => {
     const request = setAxiosProxy(req);
 
+    // clear cache POST requests
+    if (request.method === 'post') {
+        const key = getHashedPartialCacheKey(request);
+        cache.clearWithPrefix(key);
+    }
+
     // Only cache GET requests
     if (request.method === 'get') {
-        const key = getHashedCacheKey(request);
+        const key = getHashedFullCacheKey(request);
         const cached = cache.get(key);
 
         if (cached) {
@@ -74,7 +83,7 @@ axios.interceptors.request.use((req) => {
 
 // On response, set or delete the cache
 axios.interceptors.response.use((response) => {
-    const key = getHashedCacheKey(response.config);
+    const key = getHashedFullCacheKey(response.config);
     const { config } = response as any;
     if (config.method === 'get' && config.expiryTime) {
         // On get request, store the response in the cache
